@@ -14,8 +14,8 @@ import math
 import sys
 
 
-
-fileInput = "YOUR_GCODE_FILE"  #argument expects .gcode files
+RIGHT_HANDED = False   #Mark true for right handed, false for left handed
+fileInput = "DICKBUTT_0008"  #argument expects .gcode files
 fileOutput = fileInput+"_out"
 START_GCODE = ';G92 X-141.6 Y147.5 Z25\n'
 END_GCODE = 'G1 X-45 Y135 F1200\nM84\n\n'
@@ -34,9 +34,6 @@ FIRST_PARSE = False
 
 L1=float(200) #LENGTH OF THETA LINK
 L2=float(219) #LENGTH OF PHI LINK
-
-
-
 
 L12=L1**2
 L22=L2**2
@@ -68,11 +65,16 @@ def transform(point, rapid):
     R = math.hypot(point[0],point[1])
     gamma = math.atan2(point[1],point[0])
     beta = math.acos((R**2-L12-L22)/(-2*L1*L2))
-    theta2 = math.pi-beta
-    alpha = math.asin((L2*math.sin(theta2))/R)
+    psi = math.pi-beta
+    alpha = math.asin((L2*math.sin(psi))/R)
 
-    scaraSegs[0]=math.degrees(gamma-alpha)
-    scaraSegs[1]=math.degrees(theta2)
+    if RIGHT_HANDED == True:  #Right Handed Operation
+        scaraSegs[0]=math.degrees(gamma-alpha)
+        scaraSegs[1]=math.degrees(psi)
+    else:  #Left Handed Operation
+        scaraSegs[0]=math.degrees(gamma+alpha)
+        scaraSegs[1]=math.degrees(beta-math.pi)
+    
     scaraSegs[2]=point[2]
     scaraSegs[3]=point[3]
     scaraSegs[4]=point[4]
